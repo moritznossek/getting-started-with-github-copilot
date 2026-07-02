@@ -20,10 +20,16 @@ def client():
 
 
 def test_unregister_participant_from_activity(client):
-    response = client.delete("/activities/Chess%20Club/signup?email=michael@mergington.edu")
+    # Arrange
+    activity_name = "Chess Club"
+    email = "michael@mergington.edu"
 
+    # Act
+    response = client.delete(f"/activities/{activity_name.replace(' ', '%20')}/signup?email={email}")
+
+    # Assert
     assert response.status_code == 200
-    assert response.json()["message"] == "Removed michael@mergington.edu from Chess Club"
+    assert response.json()["message"] == f"Removed {email} from {activity_name}"
 
     activities = client.get("/activities").json()
-    assert "michael@mergington.edu" not in activities["Chess Club"]["participants"]
+    assert email not in activities[activity_name]["participants"]
